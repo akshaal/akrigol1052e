@@ -32,5 +32,3 @@ compname = "not compressed"
 wav_file.setparams((nchannels, sampwidth, sample_rate, data_size, comptype, compname))
 wav_file.writeframes(rawdata)
 wav_file.close()
-
-scope.close()
