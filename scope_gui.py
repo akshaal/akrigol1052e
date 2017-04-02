@@ -154,7 +154,7 @@ else:
 
 
 suff = strftime ("%Y-%m-%d %H.%M.%S", localtime())
-plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = 220, edgecolor = "white")
+plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = 400, edgecolor = "white")
 
 print("")
 print("========================================================")

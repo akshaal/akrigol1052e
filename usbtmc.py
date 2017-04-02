@@ -7,7 +7,7 @@ import time
 class UsbTMC(object):
     """Simple implementation of a USBTMC device driver, in the style of visa.h"""
 
-    def __init__(self, device):
+    def __init__(self, device = "/dev/usbtmc2"):
         self.device = device
         self.FILE = os.open(device, os.O_RDWR)
 

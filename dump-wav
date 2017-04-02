@@ -6,7 +6,7 @@ import time
 from usbtmc import UsbTMC
 from time import strftime, localtime
 
-scope = UsbTMC("/dev/usbtmc2")
+scope = UsbTMC()
 
 # Grab the raw data from channel 1
 scope.write(":STOP")

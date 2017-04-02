@@ -1,3 +1,0 @@
-#!/bin/sh
-
-./set-ch1-vdiv 50mv

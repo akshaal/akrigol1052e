@@ -1,3 +1,0 @@
-#!/bin/sh
-
-sigrok-cli --driver rigol-ds -g CH1 -c "$1" --set
