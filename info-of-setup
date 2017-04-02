@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+from usbtmc import *
+
+scope = UsbTMC()
+
+print("")
+print_sep()
+ask_and_print("Identifier", "*IDN?")
+print_sep()
+ask_and_print_float("Sampling rate", ":ACQuire:SAMPlingrate?", "", as_wtf)
+ask_and_print("Acquire type", ":ACQuire:TYPE?")
+ask_and_print("Acquire mode", ":ACQuire:MODE?")
+ask_and_print("Average acquisition time", ":ACQuire:AVERages?")
+print_sep()
+print("")
+
+scope.close()

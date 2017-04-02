@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-from usbtmc import UsbTMC
+from usbtmc import *
 
-scope = UsbTMC()
 scope.write(":STOP")
 scope.close()

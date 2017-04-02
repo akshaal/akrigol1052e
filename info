@@ -1,54 +1,10 @@
 #!/usr/bin/python
 
-from usbtmc import UsbTMC
-
-scope = UsbTMC()
+from usbtmc import *
 
 l = 30
 
-def with_units(d, m, u, n, K, M, G):
-    def f(x):
-        if x < (0.1 / 1000.0 / 1000.0):
-            return str(x * 1000000000.0) + n
-        elif x < (0.1 / 1000.0):
-            return str(x * 1000000.0) + u
-        elif x < 0.1:
-            return str(x * 1000.0) + m
-        elif x > 10000000000:
-            return str(x / 1000000000.0) + G
-        elif x > 10000000:
-            return str(x / 1000000.0) + M
-        elif x > 10000:
-            return str(x / 1000.0) + K
-        else:
-            return str(x) + d
-    return f
-
-as_time = with_units(" s", " ms", " us", " ns", " Kilo-seconds", "Mega-seconds", " Giga-seconds")
-as_volt = with_units(" V", " mV", " uV", " nV", " KV", "MV", " GV")
-as_hz = with_units(" hz", " mhz", " uhz", " nhz", " Khz", "Mhz", " Ghz")
-as_wtf = with_units(" h", " m", " u", " n", " K", "M", " G")
-
-def identity(x):
-    return x
-
-def ask_and_print(name, cmd):
-    print(name.ljust(l) + "  : " + scope.ask(cmd))
-
-def ask_and_print_float(name, cmd, suff = "", f = identity):
-    v = f(scope.ask_float(cmd))
-    print(name.ljust(l) + "  : " + str(v) + suff)
-
-def ask_and_print_float0(name, cmd, suff = "", f = identity):
-    v = f(scope.ask_for_values(cmd)[0])
-    print(name.ljust(l) + "  : " + str(v) + suff)
-
-def print_sep():
-    print("=======================================================================")
-
 print("")
-print_sep()
-ask_and_print("Identifier", "*IDN?")
 print_sep()
 ask_and_print_float("Maximum (peak)", ":MEASure:VMAX?", "", as_volt)
 ask_and_print_float("Minimum (peak)", ":MEASure:VMIN?", "", as_volt)
@@ -72,10 +28,6 @@ ask_and_print_float("Positive pulse width", ":MEASure:PWID?", "", as_time)
 ask_and_print_float("Negative pulse width", ":MEASure:NWID?", "", as_time)
 ask_and_print_float("Positive pulse duty cycle", ":MEASure:PDUT?", "")
 ask_and_print_float("Negative pulse duty cycle", ":MEASure:NDUT?", "")
-print("")
-ask_and_print_float("Sampling rate", ":ACQuire:SAMPlingrate?", "", as_wtf)
-print("")
-ask_and_print("KBD Lock", ":KEY:LOCK?")
 print_sep()
 print("")
 

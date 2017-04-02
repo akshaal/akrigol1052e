@@ -4,6 +4,49 @@ import os
 import re
 import time
 
+l = 30
+
+def with_units(d, m, u, n, K, M, G):
+    def f(x):
+        if x < (0.1 / 1000.0 / 1000.0):
+            return str(x * 1000000000.0) + n
+        elif x < (0.1 / 1000.0):
+            return str(x * 1000000.0) + u
+        elif x < 0.1:
+            return str(x * 1000.0) + m
+        elif x > 10000000000:
+            return str(x / 1000000000.0) + G
+        elif x > 10000000:
+            return str(x / 1000000.0) + M
+        elif x > 10000:
+            return str(x / 1000.0) + K
+        else:
+            return str(x) + d
+    return f
+
+as_time = with_units(" s", " ms", " us", " ns", " Kilo-seconds", "Mega-seconds", " Giga-seconds")
+as_volt = with_units(" V", " mV", " uV", " nV", " KV", "MV", " GV")
+as_hz = with_units(" hz", " mhz", " uhz", " nhz", " Khz", "Mhz", " Ghz")
+as_wtf = with_units(" h", " m", " u", " n", " K", "M", " G")
+
+def identity(x):
+    return x
+
+def ask_and_print(name, cmd):
+    print(name.ljust(l) + "  : " + scope.ask(cmd))
+
+def ask_and_print_float(name, cmd, suff = "", f = identity):
+    v = f(scope.ask_float(cmd))
+    print(name.ljust(l) + "  : " + str(v) + suff)
+
+def ask_and_print_float0(name, cmd, suff = "", f = identity):
+    v = f(scope.ask_for_values(cmd)[0])
+    print(name.ljust(l) + "  : " + str(v) + suff)
+
+def print_sep():
+    print("=======================================================================")
+
+
 class UsbTMC(object):
     """Simple implementation of a USBTMC device driver, in the style of visa.h"""
 
@@ -41,3 +84,5 @@ class UsbTMC(object):
 
     def send_reset(self):
         self.write("*RST")
+
+scope = UsbTMC()
