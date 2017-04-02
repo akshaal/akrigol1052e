@@ -4,21 +4,22 @@ import os
 import re
 import time
 
-l = 30
+l = 40
 
 def with_units(d, m, u, n, K, M, G):
     def f(x):
-        if x < (0.1 / 1000.0 / 1000.0):
+        z = abs(x)
+        if z < (0.1 / 1000.0 / 1000.0):
             return str(x * 1000000000.0) + n
-        elif x < (0.1 / 1000.0):
+        elif z < (0.1 / 1000.0):
             return str(x * 1000000.0) + u
-        elif x < 0.1:
+        elif z < 0.1:
             return str(x * 1000.0) + m
-        elif x > 10000000000:
+        elif z > 10000000000:
             return str(x / 1000000000.0) + G
-        elif x > 10000000:
+        elif z > 10000000:
             return str(x / 1000000.0) + M
-        elif x > 10000:
+        elif z > 10000:
             return str(x / 1000.0) + K
         else:
             return str(x) + d
