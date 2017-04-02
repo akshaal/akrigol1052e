@@ -1,0 +1,10 @@
+#!/usr/bin/python
+
+from usbtmc import UsbTMC
+
+scope = UsbTMC()
+
+def ask_and_print(cmd):
+    print(cmd + "  : " + scope.ask(cmd))
+
+ask_and_print("*IDN?")

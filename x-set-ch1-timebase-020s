@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./set-ch1-timebase 20s

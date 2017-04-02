@@ -1,0 +1,6 @@
+#!/usr/bin/python
+
+from usbtmc import UsbTMC
+
+scope = UsbTMC()
+scope.write(":AUTO")
