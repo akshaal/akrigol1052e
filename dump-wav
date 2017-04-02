@@ -1,0 +1,77 @@
+#!/usr/bin/python
+
+"""
+Download data from a Rigol DS1052E oscilloscope channel 1 and
+dump to a .wav file.
+By Ken Shirriff, http://righto.com/rigol
+"""
+
+import sys
+import visa
+import wave
+import os
+import time
+import re
+
+from time import strftime, localtime
+
+class UsbTMC(object):
+    """Simple implementation of a USBTMC device driver, in the style of visa.h"""
+
+    def __init__(self, device):
+        self.device = device
+        self.FILE = os.open(device, os.O_RDWR)
+
+    def close(self):
+        os.close(self.FILE)
+
+    def write(self, command):
+        os.write(self.FILE, command)
+        # The Rigol docs say to wait a bit after each command.
+        time.sleep(0.1)
+
+    def read(self, length=4000):
+        return os.read(self.FILE, length)
+
+    def ask(self, command, length=4000):
+        self.write(command)
+        return self.read(length)
+
+    def ask_float(self, command):
+        return float(self.ask(command))
+
+    def ask_for_values(self, command):
+        c = self.ask(command)
+        float_regex = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\d*\.\d+)" "(?:[eE][-+]?\d+)?")
+        vs = [float(raw_value) for raw_value in float_regex.findall(c)]
+        return vs
+
+    def get_name(self):
+        return self.ask("*IDN?")
+
+    def send_reset(self):
+        self.write("*RST")
+
+scope = UsbTMC("/dev/usbtmc2")
+
+# Grab the raw data from channel 1
+scope.write(":STOP")
+scope.write(":WAV:POIN:MODE RAW")
+rawdata = scope.ask(":WAV:DATA? CHAN1")[10:]
+data_size = len(rawdata)
+sample_rate = scope.ask_for_values(':ACQ:SAMP?')[0]
+print 'Data size:', data_size, "Sample rate:", sample_rate
+scope.write(":KEY:FORCE")
+scope.close()
+
+# Dump data to the wav file
+suff = strftime("%Y-%m-%d %H.%M.%S", localtime())
+
+wav_file = wave.open("out/channel1-" + suff + ".wav", "w")
+nchannels = 1
+sampwidth = 1
+comptype = "NONE"
+compname = "not compressed"
+wav_file.setparams((nchannels, sampwidth, sample_rate, data_size, comptype, compname))
+wav_file.writeframes(rawdata)
+wav_file.close()
