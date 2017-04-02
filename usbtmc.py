@@ -12,6 +12,7 @@ class UsbTMC(object):
         self.FILE = os.open(device, os.O_RDWR)
 
     def close(self):
+        self.write(":KEY:LOCK DISABLE")
         os.close(self.FILE)
 
     def write(self, command):

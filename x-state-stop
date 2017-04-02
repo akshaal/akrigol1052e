@@ -4,3 +4,4 @@ from usbtmc import UsbTMC
 
 scope = UsbTMC()
 scope.write(":STOP")
+scope.close()
