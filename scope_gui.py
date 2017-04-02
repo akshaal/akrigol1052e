@@ -75,20 +75,7 @@ if len(output_file) > 0:
 
 # Create figure and use date and time as title which doubles as default filename when saving image.
 fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output")
-fig.suptitle(scp.retrieval_date.strftime("     %x   %X"), weight='bold')
-
-
-# Depicts waveform window in memory similar to top center graphic on Rigol scope.
-def draw_mem_map(ax, ch_ax):
-    ax.set_title("Waveform Window in Memory")
-    ax.tick_params(axis='both', which='both', bottom='off', top='off',
-                   left='off', right='off', labelleft='off', labelbottom='off')
-    ax.set_xlim(scp.time_axis[scope.SAMPLES][0], scp.time_axis[scope.SAMPLES][len(scp.time_axis[scope.SAMPLES])-1])
-    ax.plot(np.asarray([scp.time_axis[scope.SAMPLES][0],
-            scp.time_axis[scope.SAMPLES][len(scp.time_axis[scope.SAMPLES])-1]]),
-            np.asarray([1, 1]), lw=1, color='black')
-    return ax.plot(np.asarray(ch_ax.get_xlim()), np.asarray([1, 1]), lw=3, marker='s', color='black')
-
+fig.suptitle(scp.retrieval_date.strftime("     %x   %X"), weight='bold', color = "white")
 
 # Graphs channel data
 def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
@@ -109,26 +96,12 @@ def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
     ch_ax.text(0.99, 0.98, ch.num_points_abbr + " Points", ha="right", va="top", size='small',
                transform=ch_ax.transAxes, color=ax_color)
 
+    ch_ax.tick_params(axis='x', colors='white')
+    ch_ax.tick_params(axis='y', colors='white')
+    ch_ax.title.set_color('white')
 
-# Updates Waveform Memory Map
-def on_draw(event):
-    if scp.num_active_channels > 0:
-        map_x_raw = mem_ax_lines[0].get_xdata()
-        ch_x_raw = ch_ax_ref.get_xlim()
-        map_x_rnd = (round(map_x_raw[0], 6), round(map_x_raw[1], 6))
-        ch_x_rnd = (round(ch_x_raw[0], 6), round(ch_x_raw[1], 6))
-        if map_x_rnd != ch_x_rnd:
-            mem_ax_lines[0].set_xdata(np.asarray(ch_ax_ref.get_xlim()))
-            gs.tight_layout(fig, rect=[0.01, 0, 1, 0.95])
-            plt.draw()
-fig.canvas.mpl_connect('draw_event', on_draw)
-
-
-# Maximizes plots in figure canvas.
-def on_resize(event):
-    gs.tight_layout(fig, rect=[0.01, 0, 1, 0.95])
-    fig.canvas.draw_idle()
-fig.canvas.mpl_connect('resize_event', on_resize)
+    ch_ax.yaxis.label.set_color('white')
+    ch_ax.xaxis.label.set_color('white')
 
 
 # Set colors based on whether we intend to print or just view on monitor
@@ -171,7 +144,6 @@ if scp.num_active_channels > 0:
         if num == 1:
             ch_ax = fig.add_subplot(gs[num])
             ch_ax_ref = ch_ax
-            mem_ax_lines = draw_mem_map(fig.add_subplot(gs[0]), ch_ax_ref)
         else:
             ch_ax = fig.add_subplot(gs[num], sharex=ch_ax_ref)
         draw_ch(ch, ch_ax, ch.ch_num, x_min, x_max, plot_colors[ch.ch_num - 1], fig_bg_color, grid_color)
@@ -182,6 +154,11 @@ else:
     plt.figtext(0.45, 0.5, ' Both Channels Off', color='black', weight='roman', size='small')
 
 
-plt.savefig("out/scope.png")
+plt.savefig("out/scope.png", facecolor = "#101010", dpi = 220, edgecolor = "white")
+
+print("")
+print("========================================================")
+print("Watch out for a new file in out directory!")
+print("========================================================")
 
 # plt.show()

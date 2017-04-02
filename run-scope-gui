@@ -1,3 +1,0 @@
-#!/bin/sh
-
-python scope_gui.py -d /dev/usbtmc2
