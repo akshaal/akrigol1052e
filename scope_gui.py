@@ -25,7 +25,7 @@ import argparse
 from matplotlib import gridspec
 import scope
 import shelve
-
+from time import strftime, localtime
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--device', help='device path.  ex. "/dev/usbtmc1", default is /dev/usbtmc1', required=False,
@@ -83,18 +83,17 @@ def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
     ch_ax.set_title("Channel " + str(num))
     ch_ax.set_xlabel("Time " + scp.time_axis[scope.UNITS])
     ch_ax.set_ylabel("Voltage (V)")
-    if ch.state and ch.num_points == 600:
-        ch_ax.text(0.01, 0.01, ch.meas_string, ha="left", va="bottom", size='small',
-                   transform=ch_ax.transAxes, color=ax_color)
+
     ch_ax.set_axis_bgcolor(fig_bg_color)
+
     if graph_style == 'lines':
         ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, color=ax_color)
     elif graph_style == 'dots':
         ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, linestyle='', marker='.', color=ax_color)
+
     ch_ax.grid(color=grid_color)
     ch_ax.set_xlim(scp.time_axis[scope.SAMPLES][x_min], scp.time_axis[scope.SAMPLES][x_max])
-    ch_ax.text(0.99, 0.98, ch.num_points_abbr + " Points", ha="right", va="top", size='small',
-               transform=ch_ax.transAxes, color=ax_color)
+    ch_ax.text(0.99, 0.98, ch.meas_string, ha="right", va="top", size='small', transform=ch_ax.transAxes, color=ax_color)
 
     ch_ax.tick_params(axis='x', colors='white')
     ch_ax.tick_params(axis='y', colors='white')
@@ -154,7 +153,8 @@ else:
     plt.figtext(0.45, 0.5, ' Both Channels Off', color='black', weight='roman', size='small')
 
 
-plt.savefig("out/scope.png", facecolor = "#101010", dpi = 220, edgecolor = "white")
+suff = strftime ("%Y-%m-%d %H.%M.%S", localtime())
+plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = 220, edgecolor = "white")
 
 print("")
 print("========================================================")
