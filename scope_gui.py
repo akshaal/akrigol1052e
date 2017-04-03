@@ -46,6 +46,8 @@ parser.add_argument('-o', '--output', help='Save data to file', required=False, 
 
 parser.add_argument('-a', '--showall', help='Show all', action="store_true")
 
+parser.add_argument('-q', '--quality', help='High resolution', action="store_true")
+
 args = parser.parse_args()
 device_path = args.device
 printer_friendly = args.printfriendly
@@ -54,6 +56,7 @@ graph_style = args.style
 input_file = args.input
 output_file = args.output
 show_all = args.showall
+high_res = args.quality
 dpi = 120
 
 # Adjust chunksize for large number of data points.
@@ -80,10 +83,18 @@ if len(output_file) > 0:
 fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output")
 fig.suptitle(scp.retrieval_date.strftime("     %x   %X"), weight='bold', color = "white")
 
+fnamep = ""
 if show_all:
-    fig.set_size_inches(120, 5)
+    if high_res:
+        fig.set_size_inches(240, 10)
+        fnamep = "all-high-"
+    else:
+        fnamep = "all-"
+        fig.set_size_inches(60, 5)
 else:
-    fig.set_size_inches(20, 10)
+    if high_res:
+        fnamep = "high-"
+        fig.set_size_inches(60, 40)
 
 # Graphs channel data
 def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
@@ -164,7 +175,7 @@ else:
 
 
 suff = strftime ("%Y-%m-%d %H.%M.%S", localtime())
-plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = dpi, edgecolor = "white")
+plt.savefig("out/scope-" + fnamep + suff + ".png", facecolor = "#101010", dpi = dpi, edgecolor = "white")
 
 print("")
 print("========================================================")

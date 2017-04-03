@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python scope_gui.py -d /dev/usbtmc2 -m RAW -a -q
