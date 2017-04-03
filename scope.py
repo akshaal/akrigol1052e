@@ -28,7 +28,7 @@ UNITS = 'units'
 
 class DS1000(object):
     """ Represents the scope itself and has multiple channels """
-    
+
     def __init__(self, device_path, num_channels):
         self._device_path = device_path
         self._os_file = None
@@ -140,7 +140,7 @@ class DS1000(object):
     @property
     def time_per_division(self):
         return self._time_per_division
-    
+
     @property
     def time_offset(self):
         return self._time_offset
@@ -167,7 +167,7 @@ class Channel(object):
         self._raw_points = np.asarray([])
         self._volts_div = 0.0
         self._vert_offset = 0.0
-        self._sample_rate = 0.0        
+        self._sample_rate = 0.0
         self._vmax = 0.0
         self._vmin = 0.0
         self._vpp = 0.0
@@ -178,7 +178,7 @@ class Channel(object):
         self._measures_string = ''
         self._num_points_abbr = ''
         self._volt_points = []
-        
+
     def load_channel_data(self, _os_file, _waveform_pnts_mode):
         self._state = rigolusb.get_channel_state(_os_file, self._ch_num)
         if self._state:
@@ -197,6 +197,7 @@ class Channel(object):
                                      'Vmin=' + str(self._vmin) + 'V' + ',  ' +
                                      'Vrms=' + str(self._vrms) + 'V' + ',  ' +
                                      'Vamp=' + str(self._vamp) + 'V' + ',  ' +
+                                     '\nVpp=' + str(self._vpp) + 'V' + ',  ' +
                                      'Freq=' + str(self._freq) + 'Hz' + ',  ' +
                                      'Duty=' + str(self._duty_cycle) + '%')
             if self.num_points == 600:
@@ -240,7 +241,7 @@ class Channel(object):
     @property
     def raw_points(self):
         return self._raw_points
-    
+
     @property
     def volts_div(self):
         return self._volts_div
@@ -272,11 +273,11 @@ class Channel(object):
     @property
     def vrms(self):
         return self._vrms
-    
+
     @property
     def freq(self):
         return self._freq
-    
+
     @property
     def duty_cycle(self):
         return self._duty_cycle
@@ -284,7 +285,7 @@ class Channel(object):
     @property
     def meas_string(self):
         return self._measures_string
-   
+
     @property
     def num_points(self):
         return len(self._raw_points)
@@ -292,7 +293,7 @@ class Channel(object):
     @property
     def num_points_abbr(self):
         return self._num_points_abbr
-   
+
     @property
     def volt_points(self):
         return self._volt_points

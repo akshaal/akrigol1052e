@@ -44,6 +44,8 @@ parser.add_argument('-i', '--input', help='Import data from file', required=Fals
 
 parser.add_argument('-o', '--output', help='Save data to file', required=False, default='')
 
+parser.add_argument('-a', '--showall', help='Show all', action="store_true")
+
 args = parser.parse_args()
 device_path = args.device
 printer_friendly = args.printfriendly
@@ -51,7 +53,8 @@ waveform_pnts_mode = args.mode
 graph_style = args.style
 input_file = args.input
 output_file = args.output
-
+show_all = args.showall
+dpi = 120
 
 # Adjust chunksize for large number of data points.
 mpl.rcParams['agg.path.chunksize'] = 20000
@@ -77,6 +80,11 @@ if len(output_file) > 0:
 fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output")
 fig.suptitle(scp.retrieval_date.strftime("     %x   %X"), weight='bold', color = "white")
 
+if show_all:
+    fig.set_size_inches(120, 5)
+else:
+    fig.set_size_inches(20, 10)
+
 # Graphs channel data
 def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
     ch_ax.margins(y=0.2)
@@ -90,6 +98,8 @@ def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
         ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, color=ax_color)
     elif graph_style == 'dots':
         ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, linestyle='', marker='.', color=ax_color)
+
+    print("len:",len(scp.time_axis[scope.SAMPLES]), " x_min:", x_min, " x_max:", x_max)
 
     ch_ax.grid(color=grid_color)
     ch_ax.set_xlim(scp.time_axis[scope.SAMPLES][x_min], scp.time_axis[scope.SAMPLES][x_max])
@@ -123,9 +133,9 @@ else:
     total_points_displayed = (scp.time_per_division * 12) * scp.samplerate_per_channel
     x_min = x_mid - round(total_points_displayed/2)
     x_max = x_mid + round(total_points_displayed/2)
-    if x_min < 0:
+    if x_min < 0 or show_all:
         x_min = 0
-    if x_max > (len(scp.time_axis[scope.SAMPLES])-1):
+    if x_max > (len(scp.time_axis[scope.SAMPLES])-1) or show_all:
         x_max = len(scp.time_axis[scope.SAMPLES])-1
 
 # Time to start ploting channel data
@@ -154,7 +164,7 @@ else:
 
 
 suff = strftime ("%Y-%m-%d %H.%M.%S", localtime())
-plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = 400, edgecolor = "white")
+plt.savefig("out/scope-" + suff + ".png", facecolor = "#101010", dpi = dpi, edgecolor = "white")
 
 print("")
 print("========================================================")
