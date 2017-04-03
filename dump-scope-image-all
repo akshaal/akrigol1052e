@@ -1,3 +1,7 @@
 #!/bin/sh
 
+echo ======================================================================
+echo "To get better result, Acuiring/MemDepth/LongMem must be enabled."
+echo ======================================================================
+
 python scope_gui.py -d /dev/usbtmc2 -m RAW -a
