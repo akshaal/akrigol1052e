@@ -62,7 +62,7 @@ class UsbTMC(object):
     def write(self, command):
         os.write(self.FILE, command)
         # The Rigol docs say to wait a bit after each command.
-        time.sleep(0.1)
+        time.sleep(0.2)
 
     def read(self, length=4000):
         return os.read(self.FILE, length)

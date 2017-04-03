@@ -12,7 +12,7 @@ scope = UsbTMC()
 scope.write(":STOP")
 scope.write(":WAV:POIN:MODE RAW")
 
-rawdata = scope.ask(":WAV:DATA? CHAN1")[10:]
+rawdata = scope.ask(":WAV:DATA? CHAN1", 1048586)[10:]
 data_size = len(rawdata)
 sample_rate = scope.ask_for_values(':ACQ:SAMP?')[0]
 
