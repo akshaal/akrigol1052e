@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
 
 from akrigol import *
 
