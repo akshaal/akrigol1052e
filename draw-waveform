@@ -64,7 +64,7 @@ def draw_it(show_all, high_res):
         ch_ax.set_ylabel("Voltage (V)")
 
         ch_ax.set_axis_bgcolor(fig_bg_color)
-        ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, linestyle='', marker='.', color=ax_color)
+        ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, color=ax_color)
 
         print("len:",len(scp.time_axis[scope.SAMPLES]), " x_min:", x_min, " x_max:", x_max)
 
