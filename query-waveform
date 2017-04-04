@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
+# Dump waveform into file
+
+import akrigol
+
+akrigol.print_sep()
+print("To get better result, Acuiring/MemDepth/LongMem must be enabled.")
+akrigol.print_sep()
+
+scope = akrigol.make_scope_instance()
+scope.query_scope("RAW")
+
+akrigol.serialize("scope", scope, scope.retrieval_date)

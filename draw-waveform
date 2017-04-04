@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+# Based upon code with "Copyright (c) 2015, Vinnie M.". Therefore it has the same license as the original one.... read it below.
+# Copyright (c) 2017, Akshaal blahblahblah
+# Dump waveform into file
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import gridspec
+
+import akrigol
+import scope
+
+dpi = 120
+fig_bg_color = 'black'
+grid_color = 'white'
+plot_colors = ['yellow', 'cyan', 'deeppink', 'lightblue']
+
+# Read previously serialized 'scope' object
+scp = akrigol.deserialize("scope")
+
+def draw_it(show_all, high_res):
+    # Create figure and use date and time as title which doubles as default filename when saving image.
+    fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output")
+    fig.suptitle(akrigol.make_timestamp(scp.retrieval_date), weight='bold', color = "white")
+
+    if show_all:
+        if high_res:
+            fig.set_size_inches(240, 10)
+            fnamep = "all-high"
+        else:
+            fnamep = "all"
+            fig.set_size_inches(60, 5)
+    else:
+        if high_res:
+            fnamep = "display-high"
+            fig.set_size_inches(60, 40)
+        else:
+            fnamep = "display"
+
+    # Graphs channel data
+    def draw_ch(ch, ch_ax, num, x_min, x_max, ax_color, fig_bg_color, grid_color):
+        ch_ax.margins(y=0.2)
+        ch_ax.set_title("Channel " + str(num))
+        ch_ax.set_xlabel("Time " + scp.time_axis[scope.UNITS])
+        ch_ax.set_ylabel("Voltage (V)")
+
+        ch_ax.set_axis_bgcolor(fig_bg_color)
+        ch_ax.plot(scp.time_axis[scope.SAMPLES], ch.volt_points, linestyle='', marker='.', color=ax_color)
+
+        print("len:",len(scp.time_axis[scope.SAMPLES]), " x_min:", x_min, " x_max:", x_max)
+
+        ch_ax.grid(color=grid_color)
+        ch_ax.set_xlim(scp.time_axis[scope.SAMPLES][x_min], scp.time_axis[scope.SAMPLES][x_max])
+        ch_ax.text(0.99, 0.98, ch.meas_string, ha="right", va="top", size='small', transform=ch_ax.transAxes, color=ax_color)
+
+        ch_ax.tick_params(axis='x', colors='white')
+        ch_ax.tick_params(axis='y', colors='white')
+        ch_ax.title.set_color('white')
+
+        ch_ax.yaxis.label.set_color('white')
+        ch_ax.xaxis.label.set_color('white')
+
+    # Calculate min and max initial display points so that amount of data displayed matches scope.
+    if scp.points_per_channel == 600:  # zoom out to all points
+        x_min = 0
+        x_max = 599
+    else:
+        x_mid = round(len(scp.time_axis[scope.SAMPLES])/2)
+        total_points_displayed = (scp.time_per_division * 12) * scp.samplerate_per_channel
+        x_min = x_mid - round(total_points_displayed/2)
+        x_max = x_mid + round(total_points_displayed/2)
+        if x_min < 0 or show_all:
+            x_min = 0
+        if x_max > (len(scp.time_axis[scope.SAMPLES])-1) or show_all:
+            x_max = len(scp.time_axis[scope.SAMPLES])-1
+
+    # Time to start ploting channel data
+    if scp.num_active_channels > 0:
+        h_ratios = []
+        map_ratio = round((scp.num_active_channels * 20) / 12.0)
+        h_ratios.append(map_ratio)
+        for x in range(scp.num_active_channels):
+            h_ratios.append(20)
+
+        gs = gridspec.GridSpec(scp.num_active_channels + 1, 1, height_ratios=h_ratios)
+        num = 1
+        ch_ax_ref = None
+        for ch in scp.active_channels:
+            if num == 1:
+                ch_ax = fig.add_subplot(gs[num])
+                ch_ax_ref = ch_ax
+            else:
+                ch_ax = fig.add_subplot(gs[num], sharex=ch_ax_ref)
+            draw_ch(ch, ch_ax, ch.ch_num, x_min, x_max, plot_colors[ch.ch_num - 1], fig_bg_color, grid_color)
+            num += 1
+    else:
+        gs = gridspec.GridSpec(1, 1)
+        fig.add_subplot(gs[0])
+        plt.figtext(0.45, 0.5, ' Both Channels Off', color='black', weight='roman', size='small')
+
+    fffname = "out/img-scope-" + fnamep + ".png"
+    print("Writing: " + fffname)
+    plt.savefig(fffname, facecolor = "#101010", dpi = dpi, edgecolor = "white")
+
+    suff = "-" + akrigol.make_timestamp(scp.retrieval_date)
+    fffname2 = "out/img-scope-" + fnamep + suff + ".png"
+    akrigol.call(["cp", fffname, fffname2])
+    print("Writing: " + fffname2)
+
+for show_all in [False, True]:
+    for high_res in [False, True]:
+        draw_it(show_all, high_res)
