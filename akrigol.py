@@ -67,17 +67,59 @@ as_wtf = with_units(" h", " m", " u", " n", " K", "M", " G")
 def identity(x):
     return x
 
-def ask_and_print(name, cmd):
-    print(name.ljust(PADL) + "  : " + scope.ask(cmd))
-
-def ask_and_print_float(name, cmd, suff = "", f = identity):
-    v = f(scope.ask_float(cmd))
-    print(name.ljust(PADL) + "  : " + str(v) + suff)
-
-def ask_and_print_float0(name, cmd, suff = "", f = identity):
-    v = f(scope.ask_for_values(cmd)[0])
-    print(name.ljust(PADL) + "  : " + str(v) + suff)
-
 def print_sep():
     print("=======================================================================")
+
+class UsbTMC(object):
+    def __init__(self, device = DEVICE_PATH):
+        self.device = device
+        self.FILE = os.open(device, os.O_RDWR)
+
+    def close(self):
+        self.write(":KEY:LOCK DISABLE")
+        os.close(self.FILE)
+
+    def write(self, command):
+        os.write(self.FILE, command)
+        # The Rigol docs say to wait a bit after each command.
+        time.sleep(0.2)
+
+    def read(self, length=4000):
+        return os.read(self.FILE, length)
+
+    def ask(self, command, length=4000):
+        self.write(command)
+        return self.read(length)
+
+    def ask_float(self, command):
+        return float(self.ask(command))
+
+    def ask_for_values(self, command):
+        c = self.ask(command)
+        float_regex = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\d*\.\d+)" "(?:[eE][-+]?\d+)?")
+        vs = [float(raw_value) for raw_value in float_regex.findall(c)]
+        return vs
+
+    def get_name(self):
+        return self.ask("*IDN?")
+
+    def send_reset(self):
+        self.write("*RST")
+
+    def ask_and_print(self, name, cmd):
+        print(name.ljust(PADL) + "  : " + self.ask(cmd))
+
+    def ask_and_print_float(self, name, cmd, suff = "", f = identity):
+        v = f(self.ask_float(cmd))
+        print(name.ljust(PADL) + "  : " + str(v) + suff)
+
+    def ask_and_print_float0(self, name, cmd, suff = "", f = identity):
+        v = f(self.ask_for_values(cmd)[0])
+        print(name.ljust(PADL) + "  : " + str(v) + suff)
+
+    def do_and_close(self, f):
+        try:
+            f()
+        finally:
+            self.close()
 
