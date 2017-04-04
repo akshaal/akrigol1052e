@@ -1,6 +1,0 @@
-#!/usr/bin/python
-
-from usbtmc import *
-
-scope.write(":AUTO")
-scope.close()
