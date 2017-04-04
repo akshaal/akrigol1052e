@@ -2,19 +2,33 @@
 # Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
 
 import os
+import sys
 import re
 import time
 import subprocess
 import scope
 import shelve
+import datetime
 
 DEVICE_PATH = '/dev/usbtmc2'
 PADL = 40 # well, padding width or something like this
 
+def log_stdout():
+    # Unbuffer output
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+    tee = subprocess.Popen(["tee", "-a", "out/log.txt"], stdin=subprocess.PIPE)
+    os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+    os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
+log_stdout()
+
 def make_scope_instance():
     return scope.DS1000(DEVICE_PATH, 2)
 
-def make_timestamp(obj):
+def make_timestamp(obj = None):
+    if not obj:
+        obj = datetime.datetime.now()
     return obj.strftime("%Y-%m-%d %H.%M.%S")
 
 def serialize(name, data, dobj):

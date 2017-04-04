@@ -5,8 +5,9 @@ from akrigol import *
 tmc = UsbTMC()
 
 def blahblah():
-    print("")
     print_sep()
+    print(make_timestamp())
+    print("")
     tmc.ask_and_print_float("Maximum (peak)", ":MEASure:VMAX?", "", as_volt)
     tmc.ask_and_print_float("Minimum (peak)", ":MEASure:VMIN?", "", as_volt)
     tmc.ask_and_print_float("Peak-to-peak (Max - Min)", ":MEASure:VPP?", "", as_volt)
