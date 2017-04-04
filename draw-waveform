@@ -70,7 +70,17 @@ def draw_it(show_all, high_res):
 
         ch_ax.grid(color=grid_color)
         ch_ax.set_xlim(scp.time_axis[scope.SAMPLES][x_min], scp.time_axis[scope.SAMPLES][x_max])
-        ch_ax.text(0.99, 0.98, ch.meas_string, ha="right", va="top", size='small', transform=ch_ax.transAxes, color=ax_color)
+
+        meas_str = ('Vmax=' + akrigol.as_volt(ch.vmax) + ',  ' +
+                    'Vmin=' + akrigol.as_volt(ch.vmin) + ',  ' +
+                    'Vrms=' + akrigol.as_volt(ch.vrms) + ',  ' +
+                    'Vamp=' + akrigol.as_volt(ch.vamp) + ',  ' +
+                    '\nVpp=' + akrigol.as_volt(ch.vpp) + ',  ' +
+                    'Freq=' + akrigol.as_hz(ch.freq) + ',  ' +
+                    'Duty=' + str(ch.duty_cycle) + '%')
+
+
+        ch_ax.text(0.99, 0.98, meas_str, ha="right", va="top", size='small', transform=ch_ax.transAxes, color=ax_color)
 
         ch_ax.tick_params(axis='x', colors='white')
         ch_ax.tick_params(axis='y', colors='white')
