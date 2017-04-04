@@ -1,0 +1,6 @@
+#!/usr/bin/python
+
+from akrigol import *
+
+tmc = UsbTMC()
+tmc.do_and_close(lambda: tmc.write(":KEY:LOCK DISABLE"))
