@@ -17,12 +17,13 @@ print("Points: " + str(N))
 
 print(points)
 
-spec = np.fft.hfft(points)
+spec = np.fft.rfft(points)
 spec = np.abs(spec)
+spec = np.log10(spec)
 
 print("Spec len: " + str(len(spec)))
 print(spec)
 
 import matplotlib.pyplot as plt
 plt.plot(spec)
-plt.savefig("out/x.png", dpi = 120)
+plt.savefig("out/x.png", dpi = 300)
