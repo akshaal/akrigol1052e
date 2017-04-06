@@ -9,8 +9,9 @@ import numpy
 scp = akrigol.deserialize("scope")
 
 # Write wav
-outwavfbase = "out/channel1-" + akrigol.make_timestamp(scp.retrieval_date)
-outwavf = outwavfbase + ".wav"
+def mkfilen(pref):
+    return"out/channel1-" + pref + akrigol.make_timestamp(scp.retrieval_date)
+outwavf = mkfilen("") + ".wav"
 
 rawdata = numpy.getbuffer(scp.active_channels[0].raw_points)
 
@@ -28,6 +29,13 @@ wav_file.writeframes(rawdata)
 wav_file.close()
 
 # Write spectrogram
+def write_sp(kind):
+    outspecf = mkfilen("spektr-" + kind + "-") + ".png"
+    print("Writing " + outspecf)
+    akrigol.call(["sox", outwavf, "-n", "spectrogram", "-w", kind, "-o", outspecf])
 
-outspecf = outwavfbase + "-spectr.png"
-akrigol.call(["sox", outwavf, "-n", "spectrogram", "-o", outspecf])
+write_sp("hann")
+write_sp("hamming")
+write_sp("bartlett")
+write_sp("rectangular")
+write_sp("kaiser")

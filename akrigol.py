@@ -56,21 +56,24 @@ def call(cmd_args, **kw):
 # Dumb way to work with units....
 def with_units(d, m, u, n, K, M, G):
     def f(x):
-        z = abs(x)
-        if z < (0.1 / 1000.0 / 1000.0):
-            return str(x * 1000000000.0) + n
-        elif z < (0.1 / 1000.0):
-            return str(x * 1000000.0) + u
-        elif z < 0.1:
-            return str(x * 1000.0) + m
-        elif z > 10000000000:
-            return str(x / 1000000000.0) + G
-        elif z > 10000000:
-            return str(x / 1000000.0) + M
-        elif z > 10000:
-            return str(x / 1000.0) + K
-        else:
-            return str(x) + d
+        try:
+            z = abs(x)
+            if z < (0.1 / 1000.0 / 1000.0):
+                return str(x * 1000000000.0) + n
+            elif z < (0.1 / 1000.0):
+                return str(x * 1000000.0) + u
+            elif z < 0.1:
+                return str(x * 1000.0) + m
+            elif z > 10000000000:
+                return str(x / 1000000000.0) + G
+            elif z > 10000000:
+                return str(x / 1000000.0) + M
+            elif z > 10000:
+                return str(x / 1000.0) + K
+            else:
+                return str(x) + d
+        except:
+            return str(x)
     return f
 
 as_time = with_units(" s", " ms", " us", " ns", " Kilo-seconds", "Mega-seconds", " Giga-seconds")
