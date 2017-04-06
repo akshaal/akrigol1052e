@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+# Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
+
+import akrigol
+import numpy as np
+
+# Read previously serialized 'scope' object
+scp = akrigol.deserialize("scope")
+
+points = scp.active_channels[0].raw_points
+
+#points = [1, 2, 3, 2, 1]
+
+N = len(points)
+
+print("Points: " + str(N))
+
+print(points)
+
+spec = np.fft.hfft(points)
+spec = np.abs(spec)
+
+print("Spec len: " + str(len(spec)))
+print(spec)
+
+import matplotlib.pyplot as plt
+plt.plot(spec)
+plt.savefig("out/x.png", dpi = 120)
