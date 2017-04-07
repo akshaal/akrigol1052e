@@ -3,27 +3,45 @@
 
 import akrigol
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Read previously serialized 'scope' object
-scp = akrigol.deserialize("scope")
+#scp = akrigol.deserialize("scope")
+#ch = scp.active_channels[0]
 
-points = scp.active_channels[0].raw_points
+#points = ch.raw_points
+#sample_rate = ch.sample_rate
 
-#points = [1, 2, 3, 2, 1]
+# Y = np.fft.rfft(points)
+# Y = np.abs(Y)
+#
 
-N = len(points)
+#
 
-print("Points: " + str(N))
+t = np.linspace(0, 2*np.pi, 500000, endpoint=True)
+f = 50.0 # Frequency in Hz
+A = 100.0 # Amplitude in Unit
+s = A * np.sin(2*np.pi*f*t) # Signal
+sample_rate = 1 / (t[1] - t[0])
 
-print(points)
+print("Sample rate: " + str(sample_rate))
 
-spec = np.fft.rfft(points)
-spec = np.abs(spec)
-spec = np.log10(spec)
+Y = np.fft.rfft(s)
+N = len(Y)
+Y = np.abs(Y)
+Y = 2 * Y / N
+Y = 20 * np.log10(Y)
 
-print("Spec len: " + str(len(spec)))
-print(spec)
+X = np.linspace(0, sample_rate / 2.0, N, endpoint = True)
 
-import matplotlib.pyplot as plt
-plt.plot(spec)
-plt.savefig("out/x.png", dpi = 300)
+peaks = akrigol.detect_peaks(Y)
+
+plt.plot(X, Y)
+plt.xlabel('Frequency ($Hz$)')
+plt.ylabel('Amplitude [dB]')
+
+for peak in peaks:
+    print("Peak at " + akrigol.as_hz(X[peak]) + " of " + akrigol.as_wtf((Y[peak])))
+    plt.text(X[peak], Y[peak], akrigol.as_wtf(X[peak]))
+
+plt.savefig("out/x.png", dpi = 150)

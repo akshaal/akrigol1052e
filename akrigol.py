@@ -9,6 +9,8 @@ import subprocess
 import scope
 import shelve
 import datetime
+import numpy as np
+from math import sqrt
 
 DEVICE_PATH = '/dev/usbtmc2'
 PADL = 40 # well, padding width or something like this
@@ -79,7 +81,7 @@ def with_units(d, m, u, n, K, M, G):
 as_time = with_units(" s", " ms", " us", " ns", " Kilo-seconds", "Mega-seconds", " Giga-seconds")
 as_volt = with_units(" V", " mV", " uV", " nV", " KV", "MV", " GV")
 as_hz = with_units(" hz", " mhz", " uhz", " nhz", " Khz", "Mhz", " Ghz")
-as_wtf = with_units(" h", " m", " u", " n", " K", "M", " G")
+as_wtf = with_units("", " m", " u", " n", " K", "M", " G")
 
 def identity(x):
     return x
@@ -140,3 +142,26 @@ class UsbTMC(object):
         finally:
             self.close()
 
+# Author: 'Tony Beltramelli - 07/11/2015'
+def detect_peaks(signal, threshold = 0.5):
+    """ Performs peak detection on three steps: root mean square, peak to
+    average ratios and first order logic.
+    threshold used to discard peaks too small """
+
+    # compute root mean square
+    root_mean_square = sqrt(np.sum(np.square(signal) / len(signal)))
+
+    # compute peak to average ratios
+    ratios = np.array([pow(x / root_mean_square, 2) for x in signal])
+
+    # apply first order logic
+    peaks = (ratios > np.roll(ratios, 1)) & (ratios > np.roll(ratios, -1)) & (ratios > threshold)
+
+    # optional: return peak indices
+    peak_indexes = []
+
+    for i in range(0, len(peaks)):
+        if peaks[i]:
+            peak_indexes.append(i)
+
+    return peak_indexes
