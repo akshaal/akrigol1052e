@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import peakdetect
 from pylab import rcParams
+from scipy.signal import butter, filtfilt
+from matplotlib import gridspec
 
 # Read previously serialized 'scope' object
 scp = akrigol.deserialize("scope")
@@ -22,24 +24,57 @@ N = len(Y)
 Y = np.abs(Y)
 Y = 2 * Y / N
 
+UY = Y
 Y = 20 * np.log10(Y)
 
 X = np.linspace(0, sample_rate / 2.0, N, endpoint = True)
 
-peaks, peaks2 = peakdetect.peakdetect(np.array(Y), lookahead = 20, delta = 30)
-peaks.extend(peaks2)
+def draw(i, lookahead, delta, neg = False):
+    print("------------")
 
-rcParams['figure.figsize'] = 17, 10
+    peaks, peaks2 = peakdetect.peakdetect(np.array(UY), lookahead = lookahead, delta = delta)
+    if neg:
+        peaks.extend(peaks2)
 
-LIMIT = 1000
+    MIN = 0
+    MAX = len(Y)
 
-plt.plot(X[:LIMIT], Y[:LIMIT])
-plt.xlabel('Frequency ($Hz$)')
-plt.ylabel('Amplitude [dB]')
+    plot = fig.add_subplot(gs[i])
 
-for peak in peaks:
-    peak = peak[0]
-    print("Peak at " + akrigol.as_hz(X[peak]) + " of " + akrigol.as_wtf((Y[peak])))
-    #plt.text(X[peak], Y[peak], akrigol.as_hz(X[peak]))
+    mfound = False
+    usedp = {}
+    for peak in peaks:
+        peak = peak[0]
 
-plt.savefig("out/x.png", dpi = 150)
+        print("Peak at " + akrigol.as_hz(X[peak]) + " of " + akrigol.as_wtf((Y[peak])))
+        plabel = akrigol.as_hz(X[peak])
+        if plabel not in usedp:
+            usedp[plabel] = 1
+            plot.text(X[peak], Y[peak], plabel)
+
+        if not mfound:
+            mfound = True
+            MIN = peak
+
+        MAX = peak
+
+    MIN = MIN - (MAX-MIN) / 20
+    MAX = MAX + (MAX-MIN) / 20
+    if MIN < 0: MIN = 0
+    if MAX > len(Y): MAX = len(Y)
+
+    plot.set_xlabel('Frequency ($Hz$)')
+    plot.set_ylabel('Amplitude [dB]')
+
+    plot.plot(X[MIN:MAX], Y[MIN:MAX])
+
+fig = plt.figure("abc")
+fig.set_size_inches(30, 30)
+
+gs = gridspec.GridSpec(4, 1)
+draw(0, 20, 0.5, neg = True)
+draw(1, 20, 0.1, neg = False)
+draw(2, 20, 0.05)
+draw(3, 20, 0.01, neg = True)
+
+fig.savefig("out/x.png", dpi = 150)
