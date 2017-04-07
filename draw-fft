@@ -2,8 +2,10 @@
 # Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
 
 import akrigol
+import scipy.signal
 import numpy as np
 import matplotlib.pyplot as plt
+import peakdetect
 
 # Read previously serialized 'scope' object
 #scp = akrigol.deserialize("scope")
@@ -18,7 +20,7 @@ import matplotlib.pyplot as plt
 
 #
 
-t = np.linspace(0, 2*np.pi, 500000, endpoint=True)
+t = np.linspace(0, 2*np.pi, 5000000, endpoint=True)
 f = 50.0 # Frequency in Hz
 A = 100.0 # Amplitude in Unit
 s = A * np.sin(2*np.pi*f*t) # Signal
@@ -34,13 +36,14 @@ Y = 20 * np.log10(Y)
 
 X = np.linspace(0, sample_rate / 2.0, N, endpoint = True)
 
-peaks = akrigol.detect_peaks(Y)
+peaks, peaks2 = peakdetect.peakdetect(np.array(Y), lookahead = 2, delta = 2)
 
 plt.plot(X, Y)
 plt.xlabel('Frequency ($Hz$)')
 plt.ylabel('Amplitude [dB]')
 
 for peak in peaks:
+    peak = peak[0]
     print("Peak at " + akrigol.as_hz(X[peak]) + " of " + akrigol.as_wtf((Y[peak])))
     plt.text(X[peak], Y[peak], akrigol.as_wtf(X[peak]))
 

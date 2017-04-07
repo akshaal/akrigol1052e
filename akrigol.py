@@ -61,19 +61,34 @@ def with_units(d, m, u, n, K, M, G):
         try:
             z = abs(x)
             if z < (0.1 / 1000.0 / 1000.0):
-                return str(x * 1000000000.0) + n
+                nx = x * 1000000000.0
+                c = n
             elif z < (0.1 / 1000.0):
-                return str(x * 1000000.0) + u
+                nx = x * 1000000.0
+                c = u
             elif z < 0.1:
-                return str(x * 1000.0) + m
+                nx = x * 1000.0
+                c = m
             elif z > 10000000000:
-                return str(x / 1000000000.0) + G
+                nx = x / 1000000000.0
+                c = G
             elif z > 10000000:
-                return str(x / 1000000.0) + M
+                nx = x / 1000000.0
+                c = M
             elif z > 10000:
-                return str(x / 1000.0) + K
+                nx = x / 1000.0
+                c = K
             else:
-                return str(x) + d
+                nx = x
+                c = d
+
+            nx = str(round(nx * 100.0) / 100.0)
+            if "." in nx:
+                nx = nx.rstrip("0")
+                if nx.endswith("."):
+                    nx = nx[:-1]
+
+            return nx + c
         except:
             return str(x)
     return f
@@ -141,27 +156,3 @@ class UsbTMC(object):
             f()
         finally:
             self.close()
-
-# Author: 'Tony Beltramelli - 07/11/2015'
-def detect_peaks(signal, threshold = 0.5):
-    """ Performs peak detection on three steps: root mean square, peak to
-    average ratios and first order logic.
-    threshold used to discard peaks too small """
-
-    # compute root mean square
-    root_mean_square = sqrt(np.sum(np.square(signal) / len(signal)))
-
-    # compute peak to average ratios
-    ratios = np.array([pow(x / root_mean_square, 2) for x in signal])
-
-    # apply first order logic
-    peaks = (ratios > np.roll(ratios, 1)) & (ratios > np.roll(ratios, -1)) & (ratios > threshold)
-
-    # optional: return peak indices
-    peak_indexes = []
-
-    for i in range(0, len(peaks)):
-        if peaks[i]:
-            peak_indexes.append(i)
-
-    return peak_indexes
