@@ -21,8 +21,7 @@ Y = np.fft.rfft(points)
 N = len(Y)
 Y = np.abs(Y)
 Y = 2 * Y / N
-for x in range(100):
-    Y = akrigol.savitzky_golay(Y, 5, 3)
+
 Y = 20 * np.log10(Y)
 
 X = np.linspace(0, sample_rate / 2.0, N, endpoint = True)
@@ -32,13 +31,15 @@ peaks.extend(peaks2)
 
 rcParams['figure.figsize'] = 17, 10
 
-plt.plot(X, Y)
+LIMIT = 1000
+
+plt.plot(X[:LIMIT], Y[:LIMIT])
 plt.xlabel('Frequency ($Hz$)')
 plt.ylabel('Amplitude [dB]')
 
 for peak in peaks:
     peak = peak[0]
     print("Peak at " + akrigol.as_hz(X[peak]) + " of " + akrigol.as_wtf((Y[peak])))
-    plt.text(X[peak], Y[peak], akrigol.as_hz(X[peak]))
+    #plt.text(X[peak], Y[peak], akrigol.as_hz(X[peak]))
 
 plt.savefig("out/x.png", dpi = 150)
