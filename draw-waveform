@@ -39,7 +39,7 @@ scp = akrigol.deserialize("scope")
 
 def draw_it(show_all, high_res):
     # Create figure and use date and time as title which doubles as default filename when saving image.
-    fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output")
+    fig = plt.figure(scp.retrieval_date.strftime("%Y%m%d_%H%M%S") + "_scope_output", tight_layout = True)
     fig.suptitle(akrigol.make_timestamp(scp.retrieval_date), weight='bold', color = "white")
 
     if show_all:
@@ -133,6 +133,10 @@ def draw_it(show_all, high_res):
 
     suff = "-" + akrigol.make_timestamp(scp.retrieval_date)
     fffname2 = "out/img-scope-" + fnamep + suff + ".png"
+    akrigol.call(["cp", fffname, fffname2])
+    print("Writing: " + fffname2)
+
+    fffname2 = "out/img-by-d" + suff + "-scope-" + fnamep +  ".png"
     akrigol.call(["cp", fffname, fffname2])
     print("Writing: " + fffname2)
 

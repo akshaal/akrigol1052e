@@ -12,6 +12,10 @@ import datetime
 import numpy as np
 from math import sqrt
 
+import matplotlib as mpl
+
+mpl.rcParams['agg.path.chunksize'] = 10000
+
 DEVICE_PATH = '/dev/usbtmc2'
 PADL = 40 # well, padding width or something like this
 
