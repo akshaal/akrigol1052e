@@ -73,10 +73,10 @@ def with_units(d, m, u, n, K, M, G):
             elif z < 0.1:
                 nx = x * 1000.0
                 c = m
-            elif z > 10000000000:
+            elif z > 1000000000:
                 nx = x / 1000000000.0
                 c = G
-            elif z > 10000000:
+            elif z > 1000000:
                 nx = x / 1000000.0
                 c = M
             elif z > 1000:

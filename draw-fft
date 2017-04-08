@@ -116,7 +116,7 @@ gs = gridspec.GridSpec(2, 2)
 draw(0, 2, 0.4, neg = True)
 draw(1, 20, 0.1, neg = False)
 draw(2, 20, 0.05)
-draw(3, 20, 0.1, neg = True, all = True)
+draw(3, 20, 0.01, neg = True, all = True)
 
 fffname = "out/img-fft.png"
 print("Writing: " + fffname)
