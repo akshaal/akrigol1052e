@@ -27,6 +27,8 @@ N = len(Y)
 Y = np.abs(Y)
 Y = 2 * Y / N
 
+Y[0] = min(Y)
+
 UY = Y
 Y = 20 * np.log10(Y)
 
@@ -70,15 +72,16 @@ def draw(i, lookahead, delta, neg = False, all = False):
             maxfound = True
             MAX = peak
 
-    if peaks == 1:
+    if len(peaks) == 1:
         MIN = MIN - 200
-        if MIN < 0: MIN = 0
         MAX = MAX + 200
     else:
-        MIN = MIN - (MAX-MIN) / 20
-        if MIN < 0: MIN = 0
-        MAX = MAX + (MAX-MIN) / 20
+        ddd = (MAX-MIN) / 10
+        if ddd < 200: ddd = 200
+        MIN = MIN - ddd
+        MAX = MAX + ddd
 
+    if MIN < 0: MIN = 0
     if MAX > len(Y): MAX = len(Y)
 
     if all:
@@ -107,7 +110,7 @@ fig = plt.figure("abc", tight_layout = True)
 fig.set_size_inches(60, 30)
 
 gs = gridspec.GridSpec(2, 2)
-draw(0, 20, 0.5, neg = True)
+draw(0, 2, 0.4, neg = True)
 draw(1, 20, 0.1, neg = False)
 draw(2, 20, 0.05)
 draw(3, 20, 0.1, neg = True, all = True)
