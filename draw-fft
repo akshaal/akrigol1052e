@@ -6,6 +6,8 @@ import scipy.signal
 import numpy as np
 import matplotlib.pyplot as plt
 import peakdetect
+import matplotlib.ticker as tkr
+
 from pylab import rcParams
 from scipy.signal import butter, filtfilt
 from matplotlib import gridspec
@@ -88,7 +90,8 @@ def draw(i, lookahead, delta, neg = False, all = False):
         MIN = 0
         MAX = -1
 
-    plot.set_xlabel('Frequency ($Hz$)')
+    plot.xaxis.set_major_formatter(tkr.FuncFormatter(lambda x, p: akrigol.as_hz(x)))
+
     plot.set_ylabel('Amplitude [dB]')
 
     plot.tick_params(axis='x', colors='white')
