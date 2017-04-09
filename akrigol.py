@@ -1,13 +1,14 @@
 #!/usr/bin/python
 # Copyright (c) 2017, Akshaal blahblahblah, GNU GPL blahblahblah
 
+import cPickle
+import gzip
 import os
 import sys
 import re
 import time
 import subprocess
 import scope
-import shelve
 import datetime
 import numpy as np
 from math import sqrt
@@ -40,22 +41,21 @@ def make_timestamp(obj = None):
 def serialize(name, data, dobj):
     fname = "out/" + name + ".db"
     print("Writing: " + fname)
-    db = shelve.open(fname)
-    db['data'] = data
-    db.close()
+
+    with gzip.open(fname, 'wb') as f:
+        cPickle.dump(data, f, -1)
 
     suffix = "-" + make_timestamp(dobj)
     fname2 = "out/" + name + suffix + ".db"
     print("Writing: " + fname2)
-    akrigol.call(["cp", fname, fname2])
+    call(["cp", fname, fname2])
 
 def deserialize(name):
     fname = "out/" + name + ".db"
     print("Reading: " + fname)
-    db = shelve.open(fname)
-    data = db['data']
-    db.close()
-    return data
+
+    with gzip.open(fname, 'rb') as f:
+        return cPickle.load(f)
 
 def call(cmd_args, **kw):
     return subprocess.call (cmd_args, **kw)
