@@ -38,15 +38,16 @@ def make_timestamp(obj = None):
     return obj.strftime("%Y-%m-%d %H.%M.%S")
 
 def serialize(name, data, dobj):
-    def write(suffix):
-        fname = "out/" + name + suffix + ".db"
-        print("Writing: " + fname)
-        db = shelve.open(fname)
-        db['data'] = data
-        db.close()
+    fname = "out/" + name + ".db"
+    print("Writing: " + fname)
+    db = shelve.open(fname)
+    db['data'] = data
+    db.close()
 
-    write("")
-    write("-" + make_timestamp(dobj))
+    suffix = "-" + make_timestamp(dobj)
+    fname2 = "out/" + name + suffix + ".db"
+    print("Writing: " + fname2)
+    akrigol.call(["cp", fname, fname2])
 
 def deserialize(name):
     fname = "out/" + name + ".db"
