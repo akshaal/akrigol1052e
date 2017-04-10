@@ -131,7 +131,7 @@ class UsbTMC(object):
         return self.read(length)
 
     def ask_float(self, command):
-        return float(self.ask(command))
+        return self.ask_for_values(command)[0]
 
     def ask_for_values(self, command):
         c = self.ask(command)
