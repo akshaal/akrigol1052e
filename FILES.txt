@@ -1,0 +1,29 @@
+FILES.txt: File index, this file; single-line desc per file. Shows where to find things and what to look for.
+akrigol.py: UsbTMC class for low-level USB TMC protocol; SCPI commands to Rigol scope, auto-reconnect; use for direct hardware control.
+akrigol.py: serialize()/deserialize() save/load Python objects to gzipped pickle; scope data portability; use for offline waveform analysis.
+akrigol.py: as_volt()/as_time()/as_hz()/as_wtf() format numbers w/ metric prefixes; human-readable units; use instead of raw floats in output.
+akrigol.py: make_scope_instance() factory creates DS1000 scope object; default device path; centralizes scope creation.
+akrigol.py: make_timestamp() generates "YYYY-MM-DD HH.MM.SS" strings; filesystem-safe timestamps; use for unique filenames.
+akrigol.py: call() wraps subprocess.call; consistent command execution; use instead of direct subprocess calls.
+akrigol.py: print_sep() prints separator line; console output formatting; use for visual section breaks.
+akrigol.py: savitzky_golay() smooths signals via polynomial fitting; preserves shape unlike moving avg; use for noisy waveforms.
+draw-fft: CLI tool; FFT analysis of scope waveforms, detects freq peaks at 4 sensitivity levels, generates labeled spectrum plots.
+draw-waveform: CLI tool; time-domain scope waveform plotter, annotates w/ measurements, gen 4 variants (zoom/res), dark theme plots.
+info: CLI tool; queries all waveform measurements from scope (voltage/timing/duty cycle), displays w/ timestamp, formatted units.
+info-of-setup: CLI tool; queries scope config (device ID/channels/acquisition/timebase), displays w/ timestamp.
+query-waveform: CLI tool; captures raw scope waveform, serializes to file for offline analysis; avoids repeated hardware queries.
+rigolusb.py: open_device_file()/close_device_file() manage USB TMC device file descriptors; low-level USB device access.
+rigolusb.py: set_stop()/set_local() control scope state via SCPI; stop acquisition & restore local control after remote ops.
+rigolusb.py: get_points() retrieves raw waveform data w/ mode selection; returns numpy array of scope samples.
+rigolusb.py: get_id()/get_time_per_division()/get_time_offset() query scope identification & timebase config via SCPI.
+rigolusb.py: get_channel_state()/get_volts_div()/get_vertical_offset()/get_sample_rate() query channel config via SCPI.
+rigolusb.py: get_vmax()/get_vmin()/get_vpp()/get_vrms()/get_freq()/get_duty_cycle() query waveform measurements via SCPI; error handling for invalid values.
+scope.py: DS1000 class wraps rigolusb USB w/ OOP; multi-ch Rigol scope control, waveform query, time axis calc.
+scope.py: Channel class; scope ch data/measurements (voltage/freq/duty), ADC→volt conversion via props.
+save-waveform-as-wav: CLI tool; converts scope waveform to WAV audio file w/ spectrograms; enables audio-domain signal analysis.
+unlock: CLI tool; unlocks Rigol scope front panel via SCPI; recovers from crashed remote sessions.
+peakdetect.py: peakdetect() finds local max/min by lookahead search; general-purpose, configurable delta threshold; use for any signal.
+peakdetect.py: peakdetect_zero_crossing() finds peaks via zero-crossing bins; 10x faster than peakdetect(); use for repeatable signals.
+peakdetect.py: peakdetect_fft() zero-pads FFT for higher resolution peaks; slower but more precise than peakdetect_zero_crossing().
+peakdetect.py: peakdetect_parabole() fits parabolas to peaks; refines peak positions via curve fitting after zero-crossing detection.
+peakdetect.py: peakdetect_sine() fits sine waves to peaks; most accurate for periodic signals, estimates frequency from raw peaks.
